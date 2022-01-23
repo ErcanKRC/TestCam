@@ -14,8 +14,8 @@ namespace TestCam
         private Image<Gray, Byte> BWImg;
         private double myScale;
         private int Xpx, Ypx, N;
-        private double Xcm, Ycm, Zcm = 50.0;
-        public double d1 = 3.5;
+        private double Xcm, Ycm, Zcm = 100.0;
+        public double d1 = 3.5 ;
 
         static SerialPort _serialPort;
         public byte[] Buff = new byte[2];
@@ -26,7 +26,7 @@ namespace TestCam
 
             _serialPort = new SerialPort
             {
-                PortName = "COM3",
+                PortName = "COM6",
                 BaudRate = 9600
             };
             _serialPort.Open();
@@ -50,7 +50,7 @@ namespace TestCam
 
             GrayImg = IMG.Convert<Gray, Byte>();
             BWImg = GrayImg.ThresholdBinaryInv(new Gray(50), new Gray(255));
-            myScale = 59.0 / BWImg.Width;
+            myScale = 105.0 / BWImg.Width;
 
             Xpx = 0;
             Ypx = 0;
@@ -75,15 +75,15 @@ namespace TestCam
                 Xpx -= BWImg.Width / 2;
                 Ypx = BWImg.Height / 2 - Ypx;
 
-                Xcm = (Xpx - BWImg.Width / 2) * myScale;
-                Ycm = (BWImg.Height / 2 - Ypx) * myScale;
+                Xcm = Xpx * myScale;
+                Ycm = Ypx * myScale;
 
                 textBox1.Text = Xcm.ToString();
                 textBox2.Text = Ycm.ToString();
                 textBox3.Text = N.ToString();
 
-                double diff=9.0;
-                double Pz = Ycm-diff,
+                double diff = 1.75;
+                double Pz = Ycm + diff,
                        Py = -Xcm,
                        Px = -Zcm;
 
@@ -91,12 +91,12 @@ namespace TestCam
 
                 double Th2 = Math.Atan(Math.Sin(Th1) * (Pz - d1) / Py);
 
-                Th1 *= (180 / Math.PI);
-                Th2 *= (180 / Math.PI) ;
+                Th1 *= (180 / Math.PI) * -1;
+                Th2 *= (180 / Math.PI) * -1;
 
 
-                Th1 += 90;
-                Th2 += 90;
+                Th1 += 82;
+                Th2 += 91;
 
                 textBox4.Text = Th1.ToString();
                 textBox5.Text = Th2.ToString();
@@ -115,6 +115,18 @@ namespace TestCam
 
             else
             {
+                try
+                {
+                    Buff[0] = (byte)82;
+                    Buff[1] = (byte)91;
+                    _serialPort.Write(Buff, 0, 2);
+
+                }
+                catch (Exception ex)
+                {
+                    return;
+                }
+
                 textBox1.Text = "";
                 textBox2.Text = "";
                 textBox3.Text = N.ToString();
