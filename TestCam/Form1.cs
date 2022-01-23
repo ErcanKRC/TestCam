@@ -17,7 +17,7 @@ namespace TestCam
         private double Xcm, Ycm, Zcm = 50.0;
         public double d1 = 3.5;
 
-        //Ercan 123
+        //Ercan 65
 
         static SerialPort _serialPort;
         public byte[] Buff = new byte[2];
