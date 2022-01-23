@@ -15,7 +15,7 @@ namespace TestCam
         private double myScale;
         private int Xpx, Ypx, N;
         private double Xcm, Ycm, Zcm = 100.0;
-        public double d1 = 3.5 ;
+        public double d1 = 4;
 
         static SerialPort _serialPort;
         public byte[] Buff = new byte[2];
@@ -49,8 +49,8 @@ namespace TestCam
             IMG = capture.QueryFrame();
 
             GrayImg = IMG.Convert<Gray, Byte>();
-            BWImg = GrayImg.ThresholdBinaryInv(new Gray(50), new Gray(255));
-            myScale = 105.0 / BWImg.Width;
+            BWImg = GrayImg.ThresholdBinaryInv(new Gray(60), new Gray(255));
+            myScale = 112.0 / BWImg.Width;
 
             Xpx = 0;
             Ypx = 0;
@@ -82,12 +82,25 @@ namespace TestCam
                 textBox2.Text = Ycm.ToString();
                 textBox3.Text = N.ToString();
 
-                double diff = 1.75;
-                double Pz = Ycm + diff,
-                       Py = -Xcm,
+
+                double diff = 8.0, Pz=0.0;
+
+                if (Ycm < 0)
+                {
+                    Pz = Ycm - diff;
+                }
+                else if (Ycm > 0)
+                {
+                    Pz = Ycm + diff;
+                }
+
+                double Py = -Xcm,
                        Px = -Zcm;
+                //Pz = Ycm + diff;
 
                 double Th1 = Math.Atan(Py / Px);
+
+                //double D = (Xcm > 0) ? -d1 : d1;
 
                 double Th2 = Math.Atan(Math.Sin(Th1) * (Pz - d1) / Py);
 
@@ -95,8 +108,8 @@ namespace TestCam
                 Th2 *= (180 / Math.PI) * -1;
 
 
-                Th1 += 82;
-                Th2 += 91;
+                Th1 += 90;
+                Th2 += 90;
 
                 textBox4.Text = Th1.ToString();
                 textBox5.Text = Th2.ToString();
@@ -117,8 +130,8 @@ namespace TestCam
             {
                 try
                 {
-                    Buff[0] = (byte)82;
-                    Buff[1] = (byte)91;
+                    Buff[0] = (byte)90;
+                    Buff[1] = (byte)90;
                     _serialPort.Write(Buff, 0, 2);
 
                 }
