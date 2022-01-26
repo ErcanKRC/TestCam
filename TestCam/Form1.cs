@@ -15,7 +15,6 @@ namespace TestCam
         private double myScale;
         private int Xpx, Ypx, N;
         private double Xcm, Ycm, Zcm = 100.0;
-        public double d1 = 4;
 
         static SerialPort _serialPort;
         public byte[] Buff = new byte[2];
@@ -26,7 +25,7 @@ namespace TestCam
 
             _serialPort = new SerialPort
             {
-                PortName = "COM6",
+                PortName = "COM3",
                 BaudRate = 9600
             };
             _serialPort.Open();
@@ -50,7 +49,7 @@ namespace TestCam
 
             GrayImg = IMG.Convert<Gray, Byte>();
             BWImg = GrayImg.ThresholdBinaryInv(new Gray(60), new Gray(255));
-            myScale = 112.0 / BWImg.Width;
+            myScale = 116.0 / BWImg.Width;
 
             Xpx = 0;
             Ypx = 0;
@@ -83,30 +82,21 @@ namespace TestCam
                 textBox3.Text = N.ToString();
 
 
-                double diff = 8.0, Pz=0.0;
-
-                if (Ycm < 0)
-                {
-                    Pz = Ycm - diff;
-                }
-                else if (Ycm > 0)
-                {
-                    Pz = Ycm + diff;
-                }
-
                 double Py = -Xcm,
                        Px = -Zcm;
-                //Pz = Ycm + diff;
+
+
+                double
+                    diff = 6.5, d1 = 3.5,
+                    Pz = (Ycm <= 0) ? Ycm - diff : Ycm + diff,
+                    D = (Xcm > 0) ? Pz - d1 : Pz - d1;
+
 
                 double Th1 = Math.Atan(Py / Px);
+                double Th2 = Math.Atan(Math.Sin(Th1) * D / Py);
 
-                //double D = (Xcm > 0) ? -d1 : d1;
-
-                double Th2 = Math.Atan(Math.Sin(Th1) * (Pz - d1) / Py);
-
-                Th1 *= (180 / Math.PI) * -1;
-                Th2 *= (180 / Math.PI) * -1;
-
+                Th1 *= -(180 / Math.PI);
+                Th2 *= -(180 / Math.PI);
 
                 Th1 += 90;
                 Th2 += 90;
